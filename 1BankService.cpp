@@ -8,47 +8,45 @@
 #include<chrono>
 using namespace std;
 
-// ¶¨Òå¹ñÌ¨ÊıÁ¿¡¢×î´óÈËÊı
+// define numbers
 const int counter_num = 3;
 const int maxnum_customer = 20;
 
-// ÒÔ½á¹¹ÌåµÄĞÎÊ½½«ÊäÈë¶ÁÈë
+// define structures
 struct customer_in
 {
-    int cus_no; // ¹Ë¿Í±àºÅ
-    int time_in; // ½øÈëÊ±¼ä
-    int time_serve; // ĞèÒª·şÎñµÄÊ±¼ä³¤¶È
+    int cus_no; // ï¿½Ë¿Í±ï¿½ï¿½
+    int time_in; // ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+    int time_serve; // ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ä³¤ï¿½ï¿½
 };
 
-// ÒÔ½á¹¹ÌåµÄĞÎÊ½¶Á³öÊä³ö
 struct customer_out
 {
-    double time_in; // ½øÈëÊ±¼ä
-    double time_beginserve; // ¿ªÊ¼·şÎñµÄÊ±¼ä
-    int counter_NO; // ¹ñÌ¨ºÅ
-    double time_served; // ½áÊø·şÎñÊ±¼ä
+    double time_in; // ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+    double time_beginserve; // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+    int counter_NO; // ï¿½ï¿½Ì¨ï¿½ï¿½
+    double time_served; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 };
 
-int customer_num = 0; // ¹Ë¿Í×ÜÊı
+int customer_num = 0; // ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½
 int get_num = 0;
 
 vector <customer_in> customers_in;
 vector <customer_out> customers_out;
 queue <int> wait_queue;
 
-mutex mtx_counter[counter_num]; // ¸÷¹ñÌ¨»¥³âËø
-mutex mtx_get_num; // ÅÅºÅ»ú»¥³âËø
-mutex mtx_output; // Êä³ö»¥³âËø
-counting_semaphore<maxnum_customer> sema_wait(0);
+mutex mtx_get_num; // mutex of customer number
+mutex mtx_output; // mutex of output
+counting_semaphore<maxnum_customer> sema_wait(0); // semaphor of waiting customer(P) counter(V)
 
-// ¼ÆÊ±¿ªÊ¼
+// set start time
 chrono::time_point<chrono::system_clock> time_begin = chrono::system_clock::now();
 
-// ¹Ë¿ÍÏß³Ìº¯Êı
+// process of customer
 void Customer(int PV) {
-    this_thread::sleep_for(chrono::seconds(customers_in[PV].time_in)); // Ä£Äâ½øÈëµÄÊ±¼ä
+    this_thread::sleep_for(chrono::seconds(customers_in[PV].time_in)); // 
 
-    // Õ¼ÓÃÈ¡ºÅ»ú
+    // Õ¼ï¿½ï¿½È¡ï¿½Å»ï¿½
     mtx_get_num.lock();
 
     chrono::time_point<chrono::system_clock> time_in = chrono::system_clock::now();
@@ -104,7 +102,7 @@ int main() {
     }
     customers_out.resize(customer_num);
 
-    // ´´½¨¹Ë¿ÍÏß³Ì
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ë¿ï¿½ï¿½ß³ï¿½
     vector<thread> customer_threads;
     for (int j = 0; j < customer_num; j++) {
         customer_threads.push_back(thread(Customer, j));
@@ -115,7 +113,7 @@ int main() {
         counter_threads.push_back(thread(Counter, j));
     }
 
-    // µÈ´ıËùÓĞ¹Ë¿Í±»·şÎñÍê±Ï
+    // ï¿½È´ï¿½ï¿½ï¿½ï¿½Ğ¹Ë¿Í±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     for (int j = 0; j < customer_num; j++) {
         customer_threads[j].join();
     }
@@ -124,11 +122,11 @@ int main() {
         counter_threads[j].join();
     }
 
-    cout << "ÔÊĞí½Ó´ıµÄ×î´ó¹Ë¿ÍÊıÁ¿:" << maxnum_customer << endl;
-    cout << "È«Ìå¹Ë¿Í½Ó´ıÇé¿ö£º" << endl;
-    cout << "¹Ë¿Í±àºÅ\t½øÈëÊ±¼ä\t¿ªÊ¼Ê±¼ä\t½áÊø·şÎñÊ±¼ä\t¹ñÌ¨ºÅ" << endl;
+    cout << "ï¿½ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½:" << maxnum_customer << endl;
+    cout << "È«ï¿½ï¿½Ë¿Í½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << endl;
+    cout << "ï¿½Ë¿Í±ï¿½ï¿½\tï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½\tï¿½ï¿½Ê¼Ê±ï¿½ï¿½\tï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½\tï¿½ï¿½Ì¨ï¿½ï¿½" << endl;
 
-    // Êä³ö¹Ë¿Í½Ó´ıÇé¿ö
+    // ï¿½ï¿½ï¿½ï¿½Ë¿Í½Ó´ï¿½ï¿½ï¿½ï¿½
     for (int k = 0; k < customer_num; k++) {
         cout << k << "\t\t" << customers_out[k].time_in << "\t\t" << customers_out[k].time_beginserve << "\t\t" << customers_out[k].time_served << "\t\t" << customers_out[k].counter_NO << endl;
     }
