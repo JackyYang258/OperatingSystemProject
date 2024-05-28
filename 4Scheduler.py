@@ -65,16 +65,12 @@ class Scheduler:
                 if process.arrival_time <= self.current_time:
                     heapq.heappush(self.ready_queue, process)
                     processes.remove(process)
-                    
-            
-            
-            # 检查是否有更高优先级的进程到达
+
             if self.current_process and self.ready_queue:
                 if self.current_process.priority < self.ready_queue[0].priority:
                     new_process = heapq.heappop(self.ready_queue)
                     self.preempt_current_process(new_process)
                     
-
             if not self.current_process and self.ready_queue:
                 self.current_process = heapq.heappop(self.ready_queue)
                 self.current_process.start_time = self.current_time
@@ -93,11 +89,8 @@ class Scheduler:
             self.current_time += 1
 
     def preempt_current_process(self, next_process):
-        # 将当前进程放回就绪队列
         heapq.heappush(self.ready_queue, self.current_process)
-        # 更新当前进程为更高优先级的进程
         self.current_process = next_process
-        # 更新时间
         self.current_process.start_time = self.current_time
 
 filename = "satisfied.txt"
